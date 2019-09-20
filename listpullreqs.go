@@ -42,6 +42,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/google/go-github/v25/github"
 	"github.com/sirupsen/logrus"
@@ -80,9 +83,10 @@ func main() {
 }
 
 func printPullRequests() {
-	client := getClient()
+	ctx := contextWithCtrlCHandler()
+	client := getClient(ctx)
 
-	releases, _, err := client.Repositories.ListReleases(context.Background(), org, repo, &github.ListOptions{})
+	releases, _, err := client.Repositories.ListReleases(ctx, org, repo, &github.ListOptions{})
 	if err != nil {
 		logrus.Fatalf("Failed to list releases: %v", err)
 	}
@@ -95,7 +99,7 @@ func printPullRequests() {
 
 	listSize := 1
 	for page := 1; listSize > 0; page++ {
-		pullRequests, _, err := client.PullRequests.List(context.Background(), org, repo, &github.PullRequestListOptions{
+		pullRequests, _, err := client.PullRequests.List(ctx, org, repo, &github.PullRequestListOptions{
 			State:     "closed",
 			Sort:      "updated",
 			Direction: "desc",
@@ -125,14 +129,29 @@ func printPullRequests() {
 	}
 }
 
-func getClient() *github.Client {
+func getClient(ctx context.Context) *github.Client {
 	if len(token) == 0 {
 		return github.NewClient(nil)
 	}
-	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: token},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 	return github.NewClient(tc)
+}
+
+func contextWithCtrlCHandler() context.Context {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGTERM, syscall.SIGINT, syscall.SIGPIPE)
+
+	go func() {
+		<-sigs
+		signal.Stop(sigs)
+		cancel()
+		logrus.Infof("Aborted.")
+	}()
+
+	return ctx
 }
