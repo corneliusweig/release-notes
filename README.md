@@ -1,11 +1,11 @@
 # release-notes
 
-A script to generate release notes from merged pull requests.
+Generate a markdown changelog of merged pull requests since last release.
 
 The script uses the public GitHub API to retrieve a list of all
-closed pull requests since the last release. These pull requests are
-then printed as markdown list with their commit summary and a link
-to the pull request on GitHub.
+closed pull requests since the last release. These pull requests
+are then printed as markdown changelog with their commit summary
+and a link to the pull request on GitHub.  
 
 The idea and original implementation of this script is due to Bálint Pató
 ([@balopat](https://github.com/balopat)) while working on

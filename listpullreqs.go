@@ -55,10 +55,16 @@ var (
 	repo  string
 )
 
+const longDescription = `The script uses the public GitHub API to retrieve a list of all
+closed pull requests since the last release. These pull requests
+are then printed as markdown changelog with their commit summary
+and a link to the pull request on GitHub.`
+
 var rootCmd = &cobra.Command{
 	Use:     "release-notes {org} {repo}",
 	Example: "release-notes GoogleContainerTools skaffold",
-	Short:   "Lists pull requests between two versions in a changelog markdown format",
+	Short:   "Generate a markdown changelog of merged pull requests since last release",
+	Long:    longDescription,
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		org, repo = args[0], args[1]
