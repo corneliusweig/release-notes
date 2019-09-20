@@ -14,13 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+// listpullreqs.go lists pull requests since the last release.
 package main
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v25/github"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
@@ -56,13 +57,16 @@ func main() {
 func printPullRequests() {
 	client := getClient()
 
-	releases, _, _ := client.Repositories.ListReleases(context.Background(), org, repo, &github.ListOptions{})
+	releases, _, err := client.Repositories.ListReleases(context.Background(), org, repo, &github.ListOptions{})
+	if err != nil {
+		logrus.Fatalf("Failed to list releases: %v", err)
+	}
 	lastReleaseTime := *releases[0].PublishedAt
 	fmt.Println(fmt.Sprintf("Collecting pull request that were merged since the last release: %s (%s)", *releases[0].TagName, lastReleaseTime))
 
 	listSize := 1
 	for page := 1; listSize > 0; page++ {
-		pullRequests, _, _ := client.PullRequests.List(context.Background(), org, repo, &github.PullRequestListOptions{
+		pullRequests, _, err := client.PullRequests.List(context.Background(), org, repo, &github.PullRequestListOptions{
 			State:     "closed",
 			Sort:      "updated",
 			Direction: "desc",
@@ -71,16 +75,23 @@ func printPullRequests() {
 				Page:    page,
 			},
 		})
+		if err != nil {
+			logrus.Fatalf("Failed to list pull requests: %v", err)
+		}
 
+		seen := 0
 		for idx := range pullRequests {
 			pr := pullRequests[idx]
 			if pr.MergedAt != nil {
 				if pr.GetMergedAt().After(lastReleaseTime.Time) {
 					fmt.Printf("* %s [#%d](https://github.com/%s/%s/pull/%d)\n", pr.GetTitle(), *pr.Number, org, repo, *pr.Number)
+					seen++
 				}
 			}
 		}
-
+		if seen == 0 {
+			break
+		}
 		listSize = len(pullRequests)
 	}
 }
