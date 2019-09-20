@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Skaffold Authors
+Copyright 2019 Cornelius Weig
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,6 +13,28 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+/*****************************************************
+ * NOTE The original version of this script is due to
+ *    Balint Pato and was published as part of Skaffold
+ *    (https://github.com/GoogleContainerTools/skaffold)
+ *    under the following license:
+
+Copyright 2019 The Skaffold Authors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+*****************************************************/
 
 // listpullreqs.go lists pull requests since the last release.
 package main
