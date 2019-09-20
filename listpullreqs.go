@@ -28,15 +28,12 @@ import (
 )
 
 var (
-	token   string
-	fromTag string
-	toTag   string
+	token string
 )
 
 var rootCmd = &cobra.Command{
-	Use:        "listpullreqs fromTag toTag",
-	Short:      "Lists pull requests between two versions in our changelog markdown format",
-	ArgAliases: []string{"fromTag", "toTag"},
+	Use:   "listpullreqs fromTag toTag",
+	Short: "Lists pull requests between two versions in a changelog markdown format",
 	Run: func(cmd *cobra.Command, args []string) {
 		printPullRequests()
 	},
@@ -47,8 +44,6 @@ const repo = "skaffold"
 
 func main() {
 	rootCmd.Flags().StringVar(&token, "token", "", "Specify personal Github Token if you are hitting a rate limit anonymously. https://github.com/settings/tokens")
-	rootCmd.Flags().StringVar(&fromTag, "fromTag", "", "Comparison of commits is based on this tag (defaults to the latest tag in the repo)")
-	rootCmd.Flags().StringVar(&toTag, "toTag", "master", "This is the commit that is compared with fromTag")
 	if err := rootCmd.Execute(); err != nil {
 		logrus.Fatal(err)
 	}
