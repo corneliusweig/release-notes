@@ -97,35 +97,31 @@ func printPullRequests() {
 	lastReleaseTime := *releases[0].PublishedAt
 	fmt.Println(fmt.Sprintf("Collecting pull request that were merged since the last release: %s (%s)", *releases[0].TagName, lastReleaseTime))
 
-	listSize := 1
-	for page := 1; listSize > 0; page++ {
-		pullRequests, _, err := client.PullRequests.List(ctx, org, repo, &github.PullRequestListOptions{
+	for page := 1; page != 0; {
+		pullRequests, resp, err := client.PullRequests.List(ctx, org, repo, &github.PullRequestListOptions{
 			State:     "closed",
 			Sort:      "updated",
 			Direction: "desc",
 			ListOptions: github.ListOptions{
-				PerPage: 100,
+				PerPage: 20,
 				Page:    page,
 			},
 		})
 		if err != nil {
 			logrus.Fatalf("Failed to list pull requests: %v", err)
 		}
+		page = resp.NextPage
 
-		seen := 0
 		for idx := range pullRequests {
 			pr := pullRequests[idx]
-			if pr.MergedAt != nil {
-				if pr.GetMergedAt().After(lastReleaseTime.Time) {
-					fmt.Printf("* %s [#%d](https://github.com/%s/%s/pull/%d)\n", pr.GetTitle(), *pr.Number, org, repo, *pr.Number)
-					seen++
-				}
+			if pr.GetUpdatedAt().Before(lastReleaseTime.Time) {
+				page = 0 // we are done now
+				break
+			}
+			if pr.MergedAt != nil && pr.MergedAt.After(lastReleaseTime.Time) {
+				fmt.Printf("* %s [#%d](https://github.com/%s/%s/pull/%d)\n", pr.GetTitle(), *pr.Number, org, repo, *pr.Number)
 			}
 		}
-		if seen == 0 {
-			break
-		}
-		listSize = len(pullRequests)
 	}
 }
 
