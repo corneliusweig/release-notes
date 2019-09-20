@@ -29,18 +29,20 @@ import (
 
 var (
 	token string
+	org   string
+	repo  string
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "listpullreqs fromTag toTag",
-	Short: "Lists pull requests between two versions in a changelog markdown format",
+	Use:     "release-notes {org} {repo}",
+	Example: "release-notes GoogleContainerTools skaffold",
+	Short:   "Lists pull requests between two versions in a changelog markdown format",
+	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
+		org, repo = args[0], args[1]
 		printPullRequests()
 	},
 }
-
-const org = "GoogleContainerTools"
-const repo = "skaffold"
 
 func main() {
 	rootCmd.Flags().StringVar(&token, "token", "", "Specify personal Github Token if you are hitting a rate limit anonymously. https://github.com/settings/tokens")
@@ -55,6 +57,10 @@ func printPullRequests() {
 	releases, _, err := client.Repositories.ListReleases(context.Background(), org, repo, &github.ListOptions{})
 	if err != nil {
 		logrus.Fatalf("Failed to list releases: %v", err)
+	}
+	if len(releases) == 0 {
+		logrus.Warningf("Could not find any releases for %s/%s", org, repo)
+		return
 	}
 	lastReleaseTime := *releases[0].PublishedAt
 	fmt.Println(fmt.Sprintf("Collecting pull request that were merged since the last release: %s (%s)", *releases[0].TagName, lastReleaseTime))
