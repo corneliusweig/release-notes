@@ -94,8 +94,8 @@ func printPullRequests() {
 		logrus.Warningf("Could not find any releases for %s/%s", org, repo)
 		return
 	}
-	lastReleaseTime := *releases[0].PublishedAt
-	fmt.Println(fmt.Sprintf("Collecting pull request that were merged since the last release: %s (%s)", *releases[0].TagName, lastReleaseTime))
+	lastReleaseTime := releases[0].GetPublishedAt()
+	fmt.Printf("Collecting pull request that were merged since the last release: %s (%s)\n", releases[0].GetTagName(), lastReleaseTime)
 
 	for page := 1; page != 0; {
 		pullRequests, resp, err := client.PullRequests.List(ctx, org, repo, &github.PullRequestListOptions{
@@ -119,7 +119,7 @@ func printPullRequests() {
 				break
 			}
 			if pr.MergedAt != nil && pr.MergedAt.After(lastReleaseTime.Time) {
-				fmt.Printf("* %s [#%d](https://github.com/%s/%s/pull/%d)\n", pr.GetTitle(), *pr.Number, org, repo, *pr.Number)
+				fmt.Printf("* %s [#%d](https://github.com/%s/%s/pull/%d)\n", pr.GetTitle(), pr.GetNumber(), org, repo, pr.GetNumber())
 			}
 		}
 	}
