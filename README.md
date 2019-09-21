@@ -1,11 +1,18 @@
 # release-notes
+[![Build Status](https://travis-ci.com/corneliusweig/release-notes.svg?branch=master)](https://travis-ci.com/corneliusweig/release-notes)
+[![LICENSE](https://img.shields.io/github/license/corneliusweig/release-notes.svg)](https://github.com/corneliusweig/release-notes/blob/master/LICENSE)
+<!--
+[![Code Coverage](https://codecov.io/gh/corneliusweig/release-notes/branch/master/graph/badge.svg)](https://codecov.io/gh/corneliusweig/release-notes)
+[![Go Report Card](https://goreportcard.com/badge/corneliusweig/release-notes)](https://goreportcard.com/report/corneliusweig/release-notes)
+[![Releases](https://img.shields.io/github/release-pre/corneliusweig/release-notes.svg)](https://github.com/corneliusweig/release-notes/releases)
+-->
 
-Generate a markdown changelog of merged pull requests since last release.
+Generates a markdown changelog of merged pull requests since last release.
 
-The script uses the public GitHub API to retrieve a list of all
-closed pull requests since the last release. These pull requests
-are then printed as markdown changelog with their commit summary
-and a link to the pull request on GitHub.  
+The script uses the GitHub API to retrieve a list of all merged pull
+requests since the last release. The found pull requests are then
+printed as markdown changelog with their commit summary and a link
+to the pull request on GitHub.  
 
 The idea and original implementation of this script is due to Bálint Pató
 ([@balopat](https://github.com/balopat)) while working on

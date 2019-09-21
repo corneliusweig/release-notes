@@ -58,10 +58,10 @@ var (
 	repo  string
 )
 
-const longDescription = `The script uses the public GitHub API to retrieve a list of all
-closed pull requests since the last release. These pull requests
-are then printed as markdown changelog with their commit summary
-and a link to the pull request on GitHub.`
+const longDescription = `The script uses the GitHub API to retrieve a list of all merged pull
+requests since the last release. The found pull requests are then
+printed as markdown changelog with their commit summary and a link
+to the pull request on GitHub.`
 
 var rootCmd = &cobra.Command{
 	Use:     "release-notes {org} {repo}",
