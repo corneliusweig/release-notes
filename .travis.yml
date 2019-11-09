@@ -1,27 +1,27 @@
 sudo: false
-
 language: go
-
 go:
-  - 1.13.x
-
+- 1.13.x
 go_import_path: github.com/corneliusweig/release-notes
-
-install: true
-
 notifications:
   email: false
-
 before_install:
-  - go mod download
-
+- go mod download
 env:
   global:
-    - GO111MODULE=on
-    - GOPROXY=https://proxy.golang.org
-
+  - GO111MODULE=on
+  - GOPROXY=https://proxy.golang.org
 script:
-  - hack/run-lint.sh
-  - go build ./
-  - tar czf archive.tar.gz release-notes LICENSE
-
+- make lint
+- make test
+- make
+- tar czf linux-amd64.tar.gz release-notes LICENSE
+deploy:
+  provider: releases
+  api_key:
+    secure: premeJGU2syNCf2n9KGaf9qm2V0paIfqlC9VdcrJDlieYNA/UfMw59ytavGEqYC7f8kFz++psp34JhfeuzL5AmgVHan3Ba687goq6QlIDjImQ2/WdlZa5hPDR40i3rFmy7LqExYVu52CSVI2EWjeiYHNxYrWuLI3jXq2hF5E3H5oiBMsg/Taa3cViDqnEJaxUhBT5qXFiD/5bc6bqiCCotUPPEEfyIxVcoE5TgHc60AbJX66yLCGj0QHLc8e0ILd/pYVqzO4BXfZkbnm3uCVG3+3RSey9K5NVokGMgKtKtlFuySa+osbbxfa3wTHLI4bmzs0CzSnH1nrnGGt5NSvO/24ikxJXSMEC0v/FBzVkuLBf/1wm6nqFUstsV7/gBEqHdFqH6aqeKVKTrl78RFd6xdhjuLb2D9r5v348fLqgmZwLOwfMwyCA4kR5NPBxHkQutB1ZyG4vOv0DIy5S3CQxEqEZ2QRl2u8ZUl5pvnai2WpDPG+B6sYp5G1gXPJsEwRso74dcD4gdLvLTxgaPvZsJQcq+Ww+qluEAvRyxCQt6w0hTBk0Qo1aj7S7VdXz+0y6bS3l2KAfYr8DwQuds4ha+Gd/GmEtNIWsA19mCb/62eMgnC69kSFiLd6HbZdhMMphocBDZaWy4g/Iigs0zm/J4Bet3jrLBUCkXg1PAiBKX0=
+  file: linux-amd64.tar.gz
+  cleanup: false
+  on:
+    repo: corneliusweig/release-notes
+    tags: true
