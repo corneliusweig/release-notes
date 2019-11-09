@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/blang/semver"
+)
 
 func Test_isPrereleaseSemver(t *testing.T) {
 	tests := []struct {
@@ -53,6 +57,121 @@ func Test_isPrereleaseSemver(t *testing.T) {
 				t.Errorf("Expected %q to fail", test.tag)
 			} else if err != nil && !test.shouldErr {
 				t.Errorf("Expected %q not to fail", test.tag)
+			}
+		})
+	}
+}
+
+func Test_toVersionMatcher(t *testing.T) {
+	const custom = "2.0.1"
+	tests := []struct {
+		version  string
+		isPatch  bool
+		isMinor  bool
+		isMajor  bool
+		isCustom bool
+	}{
+		{
+			version: "2.3.4-alpha.1+1234",
+		},
+		{
+			version: "2.3.4-alpha.1",
+		},
+		{
+			version: "2.3.4",
+			isPatch: true,
+		},
+		{
+			version: "2.3.0-alpha.2",
+		},
+		{
+			version: "2.3.0",
+			isPatch: true,
+			isMinor: true,
+		},
+		{
+			version:  "2.0.1-alpha3",
+			isCustom: true,
+		},
+		{
+			version:  "2.0.1",
+			isPatch:  true,
+			isCustom: true,
+		},
+		{
+			version:  "2.0.0-alpha4",
+			isCustom: true,
+		},
+		{
+			version:  "2.0.0",
+			isPatch:  true,
+			isMinor:  true,
+			isMajor:  true,
+			isCustom: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run("any "+tt.version, func(t *testing.T) {
+			matcher, err := toVersionMatcher(sinceAny)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if matcher(semver.MustParse(tt.version)) != true {
+				t.Errorf("'any' matcher should return true for %q", tt.version)
+			}
+		})
+	}
+
+	for _, tt := range tests {
+		t.Run("patch "+tt.version, func(t *testing.T) {
+			matcher, err := toVersionMatcher(sincePatch)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if matcher(semver.MustParse(tt.version)) != tt.isPatch {
+				t.Errorf("'patch' matcher should return true for %q", tt.version)
+			}
+		})
+	}
+
+	for _, tt := range tests {
+		t.Run("minor "+tt.version, func(t *testing.T) {
+			matcher, err := toVersionMatcher(sinceMinor)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if matcher(semver.MustParse(tt.version)) != tt.isMinor {
+				t.Errorf("'minor' matcher should return true for %q", tt.version)
+			}
+		})
+	}
+
+	for _, tt := range tests {
+		t.Run("major "+tt.version, func(t *testing.T) {
+			matcher, err := toVersionMatcher(sinceMajor)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if matcher(semver.MustParse(tt.version)) != tt.isMajor {
+				t.Errorf("'major' matcher should return true for %q", tt.version)
+			}
+		})
+	}
+
+	for _, tt := range tests {
+		t.Run("since= "+custom+" "+tt.version, func(t *testing.T) {
+			matcher, err := toVersionMatcher(custom)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if matcher(semver.MustParse(tt.version)) != tt.isCustom {
+				t.Errorf("since matcher should return true for %q", tt.version)
 			}
 		})
 	}
