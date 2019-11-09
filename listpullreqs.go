@@ -91,7 +91,7 @@ var rootCmd = &cobra.Command{
 
 func main() {
 	rootCmd.Flags().StringVar(&token, "token", "", "Specify personal Github Token if you are hitting a rate limit anonymously. https://github.com/settings/tokens")
-	rootCmd.Flags().StringVar(&since, "since", "any", "The previous tag up to which PRs should be collected (one of any, patch, minor, major, or a valid semver) [defaults to 'any']")
+	rootCmd.Flags().StringVar(&since, "since", "patch", "The previous tag up to which PRs should be collected (one of any, patch, minor, major, or a valid semver) [defaults to 'patch']")
 	if err := rootCmd.Execute(); err != nil {
 		logrus.Fatal(err)
 	}
