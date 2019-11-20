@@ -41,6 +41,26 @@ Collecting pull request that were merged since the last release: v0.38.0 (2019-0
 ...
 ```
 
+## Options
+
+##### `--token`
+
+Specify a personal Github Token if you are hitting a rate limit anonymously (see https://github.com/settings/tokens).
+
+##### `--since`
+
+The tag of the last release up to which PRs should be collected (one of `any`, `patch`, `minor`, `major`, or a valid semver). Defaults to 'patch'. 
+
+For example:
+
+|  |`2.3.4-alpha.1+1234`|`2.3.4-alpha.1`|`2.3.4`|`2.3.0`|`2.0.0`|
+|---|---|---|---|---|---|
+|`any`|true|true|true|true|true|
+|`patch`|false|false|true|true|true|
+|`minor`|false|false|false|true|true|
+|`major`|false|false|false|false|true|
+
+
 ## Installation
 
 Currently, you need a working Go compiler to build this script:
