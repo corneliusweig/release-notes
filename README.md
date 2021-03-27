@@ -63,8 +63,8 @@ For example:
 
 ## Installation
 
-Currently, you need a working Go compiler to build this script:
+You need Go >=1.16. Install by running:
 
 ```sh
-go get github.com/corneliusweig/release-notes
+go install github.com/corneliusweig/release-notes
 ```
