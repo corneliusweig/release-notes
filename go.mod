@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/google/go-github/v33 v33.0.0
+	github.com/google/go-github/v38 v38.1.0
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.8.1
